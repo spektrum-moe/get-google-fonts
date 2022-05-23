@@ -17,12 +17,13 @@ const REGULAR_EXPRESSIONS = {
 	face:   /\s*(?:\/\*\s*(.*?)\s*\*\/)?[^@]*?@font-face\s*{(?:[^}]*?)}\s*/gi,
 	family: /font-family\s*:\s*(?:\'|")?([^;]*?)(?:\'|")?\s*;/i,
 	weight: /font-weight\s*:\s*([^;]*?)\s*;/i,
+	style: /font-style\s*:\s*([^;]*?)\s*;/i,
 	url:    /url\s*\(\s*(?:\'|")?\s*([^]*?)\s*(?:\'|")?\s*\)\s*?/gi
 }
 const DEFAULT_CONFIG = {
 	outputDir:  './fonts',
 	path:       './',
-	template:   '{_family}-{weight}-{comment}{i}.{ext}',
+	template:   '{_family}-{weight}-{comment}-{style}.{ext}',
 	cssFile:    'fonts.css',
 	userAgent:  [
 		'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -176,6 +177,7 @@ function transformCss(config, css) {
 		[, family]   = re.family.exec(fontface);
 		family = family || '';
 		[, weight]   = re.weight.exec(fontface);
+		[, style]   = re.style.exec(fontface);
 		// Clone for reset lastIndex
 		let re_url   = cloneRegExp(re.url)
 		while((match2 = re.url.exec(fontface)) !== null) {
@@ -192,6 +194,7 @@ function transformCss(config, css) {
 				filename: filename,
 			 _family: family.replace(/\s+/g, '_'),
 				     ext: ext.replace(/^\./,'') || '',
+				     style: style,
 						   i: i++
 			}).replace(/\.$/,'')
 			fonts.push({
